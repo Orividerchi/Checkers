@@ -1,5 +1,5 @@
+import math as m
 from tkinter import *
-
 
 window = Tk()
 window.title('Checkers AI')
@@ -71,27 +71,23 @@ def set_green_rect(event):
 
 
 def set_purple_rect(event):
-  global  x_poz, y_poz
-  x_poz, y_poz = (event.x) // 100, (event.y) // 100
-  if pole[y_poz][x_poz] == 1 or pole[y_poz][x_poz] == 2:
-    board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
-    #if pole[y_poz][x_poz] == 0:
+    global x_poz, y_poz
+    x_poz, y_poz = (event.x) // 100, (event.y) // 100
+    if pole[y_poz][x_poz] == 1 or pole[y_poz][x_poz] == 2:
+        board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
+        # if pole[y_poz][x_poz] == 0:
 
 
 def Check(event):
     x, y = (event.x) // 100, (event.y) // 100
-    if pole[y][x] == 0 and pole[y_poz][x_poz]==1:  # пешка
-        ix = x_poz-x
-        iy = y_poz - y
-        if ix and iy in (-1,-1) or (-1,1) or(1,-1) or(1,1):
-            if pole[y + iy + iy][x + ix + ix] == 1:
-                pole[y][x] = 1
-                pole[y_poz][x_poz] = 0
-                board_draw()
+    if pole[y][x] == 0 and pole[y_poz][x_poz] == 1:
+        if m.fabs(x_poz - x) == 1 and y_poz - y == 1:
+            pole[y][x] = 1
+            pole[y_poz][x_poz] = 0
+            board_draw()
 
 
-
-#def hod_i():
+# def hod_i():
 
 
 main_menu = Menu()
