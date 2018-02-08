@@ -4,7 +4,7 @@ from tkinter import *
 window = Tk()
 window.title('Checkers AI')
 window.resizable(0, 0)
-window.geometry("+530+140")
+window.geometry("+440+50")
 board = Canvas(window, width=800, height=800)
 board.pack()
 
@@ -28,11 +28,11 @@ def new_game():
             [1, 0, 1, 0, 1, 0, 1, 0],
             [0, 1, 0, 1, 0, 1, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0]]
+    load_images()
     board_draw()
 
 
 def board_draw():
-    load_images()
     global checker
     global pole
     global purple_rect
@@ -44,6 +44,7 @@ def board_draw():
     purple_rect = board.create_rectangle(-5, -5, -5, -5, outline="red", width=5)
     board.bind("<Motion>", set_green_rect)
     board.bind("<Button-1>", set_purple_rect)
+    board.bind("<Button-3>", Check)
     while x < 8 * k:
         y = 1 * k
         while y < 8 * k:
@@ -70,8 +71,37 @@ def set_green_rect(event):
 
 
 def set_purple_rect(event):
+  global  x_poz, y_poz
+  x_poz, y_poz = (event.x) // 100, (event.y) // 100
+  if pole[y_poz][x_poz] == 1 or pole[y_poz][x_poz] == 2:
+    board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
+    #if pole[y_poz][x_poz] == 0:
+
+
+def Check(event):
     x, y = (event.x) // 100, (event.y) // 100
-    if pole[y][x] == 1 or pole[y][x] == 2:
-        board.coords(purple_rect, x * 100, y * 100, x * 100 + 100, y * 100 + 100)
+    if pole[y][x] == 0 and pole[y_poz][x_poz]==1:  # пешка
+        ix = x_poz-x
+        iy = y_poz - y
+        if ix and iy in (-1,-1) or (-1,1) or(1,-1) or(1,1):
+            if pole[y + iy + iy][x + ix + ix] == 1:
+                pole[y][x] = 1
+                pole[y_poz][x_poz] = 0
+                board_draw()
 
 
+
+#def hod_i():
+
+
+main_menu = Menu()
+
+file_menu = Menu()
+file_menu.add_command(label="Difficulty")
+
+main_menu.add_cascade(label="New Game", command=new_game)
+main_menu.add_cascade(label="Options", menu=file_menu)
+main_menu.add_cascade(label="Exit", command=exit)
+window.config(menu=main_menu)
+new_game()
+window.mainloop()
