@@ -19,6 +19,7 @@ def load_images():
 
 
 def new_game():
+    global spisok
     global pole
     pole = [[0, 3, 0, 3, 0, 3, 0, 3],
             [3, 0, 3, 0, 3, 0, 3, 0],
@@ -75,19 +76,48 @@ def set_purple_rect(event):
     x_poz, y_poz = (event.x) // 100, (event.y) // 100
     if pole[y_poz][x_poz] == 1 or pole[y_poz][x_poz] == 2:
         board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
-        # if pole[y_poz][x_poz] == 0:
+
+       # board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
 
 
 def Check(event):
+    spisok = []
     x, y = (event.x) // 100, (event.y) // 100
     if pole[y][x] == 0 and pole[y_poz][x_poz] == 1:
         if m.fabs(x_poz - x) == 1 and y_poz - y == 1:
             pole[y][x] = 1
             pole[y_poz][x_poz] = 0
+            for y in range(8):
+                for x in range(8):
+                    spisok = Hod(spisok)
             board_draw()
 
+def Hod(spisok):
+    for y in range(8):
+        for x in range(8):
+            if pole[y][x] == 1:
+                for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+                    if 0 <= y + iy + iy <= 7 and 0 <= x + ix + ix <= 7:
+                        if pole[y + iy][x + ix] == 3 or pole[y + iy][x + ix] == 4:
+                            if pole[y + iy + iy][x + ix + ix] == 0:
+                                spisok.append(((x, y), (x + ix + ix, y + iy + iy)))
+    if pole[y][x] == 2:
+        for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+            osh = 0
+            for i in range(1, 8):
+                if 0 <= y + iy * i <= 7 and 0 <= x + ix * i <= 7:
+                    if osh == 1:
+                        spisok.append(((x, y), (x + ix * i, y + iy * i)))
+                    if pole[y + iy * i][x + ix * i] == 3 or pole[y + iy * i][x + ix * i] == 4:
+                        osh += 1
+                    if pole[y + iy * i][x + ix * i] == 1 or pole[y + iy * i][x + ix * i] == 2 or osh == 2:
+                        if osh > 0: spisok.pop()
+                        break
+    return spisok
 
-# def hod_i():
+
+
+#def hod_i(event):
 
 
 main_menu = Menu()
