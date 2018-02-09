@@ -1,5 +1,6 @@
 import math as m
 from tkinter import *
+import time as t
 
 window = Tk()
 window.title('Checkers AI')
@@ -81,15 +82,37 @@ def set_purple_rect(event):
         board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
 
 
+def check_c():
+    spisok = []
+    if hod_white(spisok) != []:
+        print(spisok)
+        b = spisok[0][0]
+        x1 = b[0]
+        y1 = b[1]
+        b = spisok[0][1]
+        x2 = b[0]
+        y2 = b[1]
+    pole[y2][x2] = 3
+    pole[y1][x1] = 0
+    board_draw()
+    hod_ai()
+
+
 def check_click(event):
     spisok = []
     x, y = (event.x) // 100, (event.y) // 100
     check = ((x_poz, y_poz), (x, y))
     if check_attack_white(spisok) != []:
-        print(check_attack_white(spisok))
+        print('Draca')
+        if check in check_attack_white(spisok):
+            print('s ', check_attack_white(spisok))
+            pole[y][x] = 1
+            pole[y_poz][x_poz] = 0
+
+            board_draw()
+            hod_ai()
     elif check in hod_white(spisok):
-        print(hod_white(spisok))
-        print('1')
+      #  print(hod_white(spisok))
         pole[y][x] = 1
         pole[y_poz][x_poz] = 0
         board_draw()
@@ -99,38 +122,27 @@ def check_click(event):
 def hod_ai():
     spisok = []
     if hod_black(spisok) != []:
-        print(spisok)
-        print('2')
+        #print(spisok)
         b = spisok[0][0]
         x1 = b[0]
         y1 = b[1]
         b = spisok[0][1]
         x2 = b[0]
         y2 = b[1]
-
-        #print(spiso
-        #y2, x2 = spisok(0(1))
     pole[y2][x2] = 3
     pole[y1][x1] = 0
     board_draw()
-
-    #if pole[y][x] == 0 and pole[y_poz][x_poz] == 1:
-     #   if m.fabs(x_poz - x) == 1 and y_poz - y == 1:
-
+    if check_attack_black(spisok)==[]:
+        print('as')
 
 
 def check_attack_white(spisok):
-    for y in range(8):
-        for x in range(8):
-            hod_white_attack(spisok)
+    hod_white_attack(spisok)
     return spisok
 
 
 def check_attack_black(spisok):
-
-    for y in range(8):
-        for x in range(8):
-            hod_black_attack(spisok)
+    hod_black_attack(spisok)
     return spisok
 
 
