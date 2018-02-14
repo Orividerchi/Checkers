@@ -67,10 +67,6 @@ def board_draw():
         for x in range(8):
             z = pole[y][x]
             if z != 0:
-                if pole[y][0] == 1:
-                    pole[y][0] == 2
-                if pole[y][7] == 3:
-                    pole[y][7] == 4
                 board.create_image(k * x, y * k, anchor=NW, image=checker[z])
 
 
@@ -88,25 +84,57 @@ def set_purple_rect(event):
 
 def check_c():
     spisok = []
-    if hod_white(spisok) != []:
-        print(spisok)
+    if check_attack_white(spisok) != []:
+        b = spisok[0][0]
+        x_poz = b[0]
+        y_poz = b[1]
+        b = spisok[0][1]
+        x = b[0]
+        y = b[1]
+        kx = ky = 1
+        if x < x_poz: kx = -1
+        if y < y_poz: ky = -1
+        x_poz2, y_poz2 = x_poz, y_poz
+        while (x != x_poz2) or (y != y_poz2):
+            x_poz2 += kx
+            y_poz2 += ky
+            if pole[y_poz2][x_poz2] != 0:
+                if pole[y_poz][x_poz] == 2:
+                    pole[y_poz2][x_poz2] = 0
+                    pole[y][x] = 2
+                    pole[y_poz][x_poz] = 0
+                if pole[y_poz][x_poz] == 1:
+                    pole[y_poz2][x_poz2] = 0
+                    pole[y][x] = 1
+                    pole[y_poz][x_poz] = 0
+                if y == 0:
+                    pole[y][x] = 2
+                board_draw()
+                t.sleep(2)
+                spisok=[]
+                if check_attack_white(spisok) != [] :
+                    hod_ai()
+    elif hod_white(spisok) != []:
         b = spisok[0][0]
         x1 = b[0]
         y1 = b[1]
         b = spisok[0][1]
         x2 = b[0]
         y2 = b[1]
-    pole[y2][x2] = 3
-    pole[y1][x1] = 0
+        if pole[y1][x1] == 2:
+            pole[y2][x2] = 2
+            pole[y1][x1] = 0
+        if pole[y1][x1] == 1:
+            pole[y2][x2] = 1
+            pole[y1][x1] = 0
+        if y2 == 0:
+            pole[y2][x2] = 2
     board_draw()
     hod_ai()
 
 
 def check_click(event):
     spisok = []
-    for i in range(8):
-        print(pole[i])
-    print('')
     x, y = (event.x) // 100, (event.y) // 100
     check = ((x_poz, y_poz), (x, y))
     if check_attack_white(spisok) != []:
@@ -119,25 +147,32 @@ def check_click(event):
                 x_poz2 += kx
                 y_poz2 += ky
                 if pole[y_poz2][x_poz2] != 0:
-                    pole[y_poz2][x_poz2] = 0
-                    pole[y][x] = 1
-                    pole[y_poz][x_poz] = 0
-
+                    if pole[y_poz][x_poz] == 2:
+                        pole[y_poz2][x_poz2] = 0
+                        pole[y][x] = 2
+                        pole[y_poz][x_poz] = 0
+                    if pole[y_poz][x_poz] == 1:
+                        pole[y_poz2][x_poz2] = 0
+                        pole[y][x] = 1
+                        pole[y_poz][x_poz] = 0
+                    if y == 0:
+                        pole[y][x] = 2
                     board_draw()
                     spisok =[]
-        if check_attack_white(spisok) == []:
-            hod_ai()
-
-                    #if pole[y_poz][x_poz] == 3 or pole[poz2_y][poz2_x] == 4:  # ...компьютера
-                   #    return prosmotr_hodov_k1p([], poz2_x, poz2_y)  # возвращаем список доступных ходов
-                   # elif pole[poz2_y][poz2_x] == 1 or pole[poz2_y][poz2_x] == 2:  # ...игрока
-                   #     return prosmotr_hodov_i1p([], poz2_x, poz2_y)  # возвращаем список доступных ходов
-            #if f: vivod(poz1_x, poz1_y, poz2_x, poz2_y)  # рисуем игровое поле
-           # board_draw()
+                    check_attack_white(spisok)
+            if spisok == []:
+                hod_ai()
+            elif (x,y) == spisok[0][0]:
+                print('hjlkk')
     elif check in hod_white(spisok):
-        pole[y][x] = 1
-        pole[y_poz][x_poz] = 0
-
+        if pole[y_poz][x_poz] == 1:
+            pole[y][x] = 1
+            pole[y_poz][x_poz] = 0
+        if pole[y_poz][x_poz] == 2:
+            pole[y][x] = 2
+            pole[y_poz][x_poz] = 0
+        if y == 0:
+            pole[y][x] = 2
         board_draw()
         hod_ai()
 
@@ -158,13 +193,24 @@ def hod_ai():
             x_poz2 += kx
             y_poz2 += ky
             if pole[y_poz2][x_poz2] != 0:
-                pole[y_poz2][x_poz2] = 0
-                pole[y][x] = 3
-                pole[y_poz][x_poz] = 0
+                if pole[y_poz][x_poz] == 4:
+                    pole[y_poz2][x_poz2] = 0
+                    pole[y][x] = 4
+                    pole[y_poz][x_poz] = 0
+                if pole[y_poz][x_poz] == 3:
+                    pole[y_poz2][x_poz2] = 0
+                    pole[y][x] = 3
+                    pole[y_poz][x_poz] = 0
+                if y == 7:
+                    pole[y][x] = 4
                 board_draw()
                 spisok=[]
-                if check_attack_black(spisok) != [] :
-                    hod_ai()
+        check = (x,y)
+        check_attack_black(spisok)
+        if spisok ==[]:
+            print('hodmi')
+        elif check == spisok[0][0]:
+            hod_ai()
     elif hod_black(spisok) != []:
         b = spisok[0][0]
         x1 = b[0]
@@ -172,8 +218,14 @@ def hod_ai():
         b = spisok[0][1]
         x2 = b[0]
         y2 = b[1]
-        pole[y2][x2] = 3
-        pole[y1][x1] = 0
+        if pole[y1][x1] == 4:
+            pole[y2][x2] = 4
+            pole[y1][x1] = 0
+        if pole[y1][x1] == 3:
+            pole[y2][x2] = 3
+            pole[y1][x1] = 0
+        if y2 == 7:
+            pole[y2][x2] = 4
     board_draw()
 
 
