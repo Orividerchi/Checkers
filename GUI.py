@@ -70,6 +70,21 @@ def board_draw():
                 board.create_image(k * x, y * k, anchor=NW, image=checker[z])
 
 
+def animation(x1, y1, x2, y2):
+    x = pole[y2][x2]
+    k = 100
+    board.create_rectangle(x1 * 100, y1 * 100, x1 * 100 + 100, y1 * 100 + 100, fill="black")
+    if x != 0:
+        board.create_image(k * x1, y1 * k, anchor=NW, image=checker[x], tag='ani')
+    kx = 1 if x1 < x2 else -1
+    ky = 1 if y1 < y2 else -1
+    for i in range(abs(x1 - x2)):
+        for j in range(0, 33):
+            board.move('ani', 0.03 * 100 * kx, 0.03 * 100 * ky)
+            window.update()
+            t.sleep(0.01)
+
+
 def set_green_rect(event):
     x, y = (event.x) // 100, (event.y) // 100
     board.coords(green_rect, x * 100, y * 100, x * 100 + 100, y * 100 + 100)
@@ -153,8 +168,10 @@ def check_click(event):
     if check_attack_white(spisok) != []:
         if check in check_attack_white(spisok):
             kx = ky = 1
-            if x < x_poz: kx = -1
-            if y < y_poz: ky = -1
+            if x < x_poz:
+                kx = -1
+            if y < y_poz:
+                ky = -1
             x_poz2, y_poz2 = x_poz, y_poz
             while (x != x_poz2) or (y != y_poz2):
                 x_poz2 += kx
@@ -170,13 +187,14 @@ def check_click(event):
                         pole[y_poz][x_poz] = 0
                     if y == 0:
                         pole[y][x] = 2
-                    board_draw()
-                    spisok =[]
-                    check_attack_white(spisok)
+            animation(x_poz, y_poz, x, y)
+            board_draw()
+            spisok = []
+            check_attack_white(spisok)
             if spisok == []:
                 hod_ai()
-            elif (x,y) == spisok[0][0]:
-                print('hjlkk')
+            elif (x, y) == spisok[0][0]:
+                print(spisok[0][0])
     elif check in hod_white(spisok):
         if pole[y_poz][x_poz] == 1:
             pole[y][x] = 1
@@ -188,7 +206,10 @@ def check_click(event):
             pole[y][x] = 2
         #animation(x_poz,y_poz,x,y)
         #board_draw()
+        animation(x_poz, y_poz, x, y)
+        board_draw()
         hod_ai()
+
 
 def hod_ai():
     spisok = []
@@ -217,9 +238,10 @@ def hod_ai():
                     pole[y_poz][x_poz] = 0
                 if y == 7:
                     pole[y][x] = 4
-                board_draw()
-                spisok=[]
-        check = (x,y)
+        animation(x_poz, y_poz, x, y)
+        board_draw()
+        spisok = []
+        check = (x, y)
         check_attack_black(spisok)
         if spisok ==[]:
             print('hodmi')
@@ -240,7 +262,8 @@ def hod_ai():
             pole[y1][x1] = 0
         if y2 == 7:
             pole[y2][x2] = 4
-    board_draw()
+        animation(x1, y1, x2, y2)
+        board_draw()
 
 
 
