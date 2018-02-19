@@ -82,6 +82,19 @@ def set_purple_rect(event):
         board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
 
 
+def animation(x1,y1,x2,y2):
+    kx = 1 if x1<x2 else -1
+    ky = 1 if y1<y2 else -1
+    z = pole[y1][x1]
+    if z:
+        board.create_image(x1 * 100, y1 * 100, anchor = NW, image = load_images[z], tag = 'ani')
+    for w in range(abs(x1-x2)):
+        for i in range(50):
+            board.move('ani', 0.03 * 100 *kx, 0.03 * 100 *ky)
+            board.update()
+            t.sleep(0.01)
+
+
 def check_c():
     spisok = []
     if check_attack_white(spisok) != []:
@@ -173,7 +186,8 @@ def check_click(event):
             pole[y_poz][x_poz] = 0
         if y == 0:
             pole[y][x] = 2
-        board_draw()
+        #animation(x_poz,y_poz,x,y)
+        #board_draw()
         hod_ai()
 
 def hod_ai():
