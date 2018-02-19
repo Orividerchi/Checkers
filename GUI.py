@@ -97,17 +97,22 @@ def set_purple_rect(event):
         board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
 
 
-def animation(x1,y1,x2,y2):
-    kx = 1 if x1<x2 else -1
-    ky = 1 if y1<y2 else -1
-    z = pole[y1][x1]
-    if z:
-        board.create_image(x1 * 100, y1 * 100, anchor = NW, image = load_images[z], tag = 'ani')
-    for w in range(abs(x1-x2)):
-        for i in range(50):
-            board.move('ani', 0.03 * 100 *kx, 0.03 * 100 *ky)
-            board.update()
-            t.sleep(0.01)
+def scan(spisok):
+    p_white = 0
+    p_black = 0
+    pole2 = pole
+    for i in range(8):
+        for j in range(8):
+            if pole2[j][i] == 1: p_white += 1
+            if pole[j][i] == 2: p_white += 3
+            if pole[j][i] == 3: p_black += 1
+            if pole[j][i] == 4: p_black += 3
+
+
+
+def ocenka(spisok):
+    spisok2 = spisok
+    
 
 
 def check_c():
