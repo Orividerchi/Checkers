@@ -109,10 +109,8 @@ def scan(spisok):
             if pole[j][i] == 4: p_black += 3
 
 
-
 def ocenka(spisok):
     spisok2 = spisok
-    
 
 
 def check_c():
@@ -142,11 +140,13 @@ def check_c():
                     pole[y_poz][x_poz] = 0
                 if y == 0:
                     pole[y][x] = 2
-                board_draw()
-                t.sleep(2)
+
+                hod_ai()
                 spisok=[]
                 if check_attack_white(spisok) != [] :
                     hod_ai()
+        animation(x_poz, y_poz, x, y)
+        board_draw()
     elif hod_white(spisok) != []:
         b = spisok[0][0]
         x1 = b[0]
@@ -162,8 +162,9 @@ def check_c():
             pole[y1][x1] = 0
         if y2 == 0:
             pole[y2][x2] = 2
-    board_draw()
-    hod_ai()
+        animation(x1, y1, x2, y2)
+        board_draw()
+        hod_ai()
 
 
 def check_click(event):
@@ -245,6 +246,7 @@ def hod_ai():
                     pole[y][x] = 4
         animation(x_poz, y_poz, x, y)
         board_draw()
+       # check_c()
         spisok = []
         check = (x, y)
         check_attack_black(spisok)
@@ -269,6 +271,7 @@ def hod_ai():
             pole[y2][x2] = 4
         animation(x1, y1, x2, y2)
         board_draw()
+      #  check_c()
 
 
 
