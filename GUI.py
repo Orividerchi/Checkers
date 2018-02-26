@@ -20,6 +20,7 @@ def load_images():
 
 
 def new_game():
+    global deep
     global spisok
     spisok = []
     global pole
@@ -109,8 +110,76 @@ def scan(spisok):
             if pole[j][i] == 4: p_black += 3
 
 
-def ocenka(spisok):
+def etachtyca(spisok, pole_d, deepi):
     spisok2 = spisok
+    pole2 = pole_d
+    while deepi < deep:
+        deepi += 1
+        length = spisok2.length
+        while length != 0:
+            hod_ai_for_neyron(spisok2, pole2)
+            if spisok2 != []:
+                del spisok2[0]
+
+
+def c_attack_black(spisok,pole2):
+    if check_attack_black(spisok) != []:
+        b = spisok[0][0]
+        x_poz = b[0]
+        y_poz = b[1]
+        b = spisok[0][1]
+        x = b[0]
+        y = b[1]
+        kx = ky = 1
+        if x < x_poz: kx = -1
+        if y < y_poz: ky = -1
+        x_poz2, y_poz2 = x_poz, y_poz
+        while (x != x_poz2) or (y != y_poz2):
+            x_poz2 += kx
+            y_poz2 += ky
+            if pole2[y_poz2][x_poz2] != 0:
+                if pole2[y_poz][x_poz] == 4:
+                    pole2[y_poz2][x_poz2] = 0
+                    pole2[y][x] = 4
+                    pole2[y_poz][x_poz] = 0
+                if pole2[y_poz][x_poz] == 3:
+                    pole2[y_poz2][x_poz2] = 0
+                    pole2[y][x] = 3
+                    pole2[y_poz][x_poz] = 0
+                if y == 7:
+                    pole2[y][x] = 4
+        spisok = []
+        check = (x, y)
+        check_attack_black(spisok)
+        if spisok ==[]:
+            print('hodmi')
+        elif check == spisok[0][0]:
+            hod_ai()
+
+
+def h_black(spisok,pole2):
+    if hod_black(spisok) != []:
+        b = spisok[0][0]
+        x1 = b[0]
+        y1 = b[1]
+        b = spisok[0][1]
+        x2 = b[0]
+        y2 = b[1]
+        if pole2[y1][x1] == 4:
+            pole2[y2][x2] = 4
+            pole2[y1][x1] = 0
+        if pole2[y1][x1] == 3:
+            pole2[y2][x2] = 3
+            pole2[y1][x1] = 0
+        if y2 == 7:
+            pole2[y2][x2] = 4
+
+
+
+def hod_ai_for_neyron(spisok, pole2):
+    spisok = []
+    c_attack_black(spisok, pole2)
+    h_black(spisok, pole2)
 
 
 def check_c():
@@ -140,7 +209,6 @@ def check_c():
                     pole[y_poz][x_poz] = 0
                 if y == 0:
                     pole[y][x] = 2
-
                 hod_ai()
                 spisok=[]
                 if check_attack_white(spisok) != [] :
