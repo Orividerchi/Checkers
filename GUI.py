@@ -20,8 +20,12 @@ def load_images():
 
 
 def new_game():
+    global pole_w
     global deep
+    deep = 1
     global spisok
+    global p
+    p=1
     spisok = []
     global pole
     pole = [[0, 3, 0, 3, 0, 3, 0, 3],
@@ -37,10 +41,7 @@ def new_game():
 
 
 def board_draw():
-    global p_hod
-    p_hod = False
     global checker
-    global pole
     global purple_rect
     global green_rect
     board.delete('all')
@@ -93,76 +94,100 @@ def set_green_rect(event):
 
 def set_purple_rect(event):
     global x_poz, y_poz
+    print('p')
+    for i in range(8):
+        print(pole[i])
     x_poz, y_poz = (event.x) // 100, (event.y) // 100
     if pole[y_poz][x_poz] == 1 or pole[y_poz][x_poz] == 2:
         board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
 
 
-def scan(spisok):
+def scan(pole2):
     p_white = 0
     p_black = 0
-    pole2 = pole
     for i in range(8):
         for j in range(8):
             if pole2[j][i] == 1: p_white += 1
-            if pole[j][i] == 2: p_white += 3
-            if pole[j][i] == 3: p_black += 1
-            if pole[j][i] == 4: p_black += 3
+            if pole2[j][i] == 2: p_white += 3
+            if pole2[j][i] == 3: p_black += 1
+            if pole2[j][i] == 4: p_black += 3
+    return [p_white, p_black]
 
 
-def etachtyca(spisok, pole_d, deepi):
-    spisok2 = spisok
+def etachtyca(pole_d, deepi):
     pole2 = pole_d
-    while deepi < deep:
-        deepi += 1
-        length = spisok2.length
-        while length != 0:
-            hod_ai_for_neyron(spisok2, pole2)
-            if spisok2 != []:
-                del spisok2[0]
+    spisok2 = []
+    while deepi != deep:
+        if check_attack_black_ai(spisok2, pole2) != []:
+            spisok2 = check_attack_black_ai(spisok2, pole2)
+        else:
+            spisok2 = hod_black_ai(spisok2, pole2)
+        while deepi < deep:
+            f1(spisok2, pole2, deepi)
+            deepi += 1
+    return pole2
 
 
-def c_attack_black(spisok,pole2):
-    if check_attack_black(spisok) != []:
-        b = spisok[0][0]
-        x_poz = b[0]
-        y_poz = b[1]
-        b = spisok[0][1]
+def f1(spisok2,pole2, deepi):
+    spisok3 = []
+    while spisok2 != []:
+        for i in range (8):
+            print(pole2[i])
+        print('2')
+        pole3 = c_attack_black(spisok2, pole2)
+        for i in range (8):
+            print(pole2[i])
+        print('3')
+        del spisok2[0]
+        if check_attack_white_ai(spisok3, pole3) != []:
+            spisok3 = check_attack_white_ai(spisok3, pole3)
+        else:
+            spisok3 = hod_white_ai(spisok3, pole3)
+        while spisok3 != []:
+            pole3 = c_attack_white(spisok3, pole3)
+            del spisok3[0]
+            etachtyca(pole3, deepi)
+    return scan(pole3)
+
+def c_attack_black(spisok2, pole2):
+    spisok2 = []
+    if check_attack_black_ai(spisok2, pole2) != []:
+        b = spisok2[0][0]
+        xi = b[0]
+        yi = b[1]
+        b = spisok2[0][1]
         x = b[0]
         y = b[1]
         kx = ky = 1
-        if x < x_poz: kx = -1
-        if y < y_poz: ky = -1
-        x_poz2, y_poz2 = x_poz, y_poz
+        if x < xi: kx = -1
+        if y < yi: ky = -1
+        x_poz2, y_poz2 = xi, yi
         while (x != x_poz2) or (y != y_poz2):
             x_poz2 += kx
             y_poz2 += ky
             if pole2[y_poz2][x_poz2] != 0:
-                if pole2[y_poz][x_poz] == 4:
+                if pole2[yi][xi] == 4:
                     pole2[y_poz2][x_poz2] = 0
                     pole2[y][x] = 4
-                    pole2[y_poz][x_poz] = 0
-                if pole2[y_poz][x_poz] == 3:
+                    pole2[yi][xi] = 0
+                if pole2[yi][xi] == 3:
                     pole2[y_poz2][x_poz2] = 0
                     pole2[y][x] = 3
-                    pole2[y_poz][x_poz] = 0
+                    pole2[yi][xi] = 0
                 if y == 7:
                     pole2[y][x] = 4
-        spisok = []
+        spisok2 = []
         check = (x, y)
-        check_attack_black(spisok)
-        if spisok ==[]:
-            print('hodmi')
-        elif check == spisok[0][0]:
-            hod_ai()
-
-
-def h_black(spisok,pole2):
-    if hod_black(spisok) != []:
-        b = spisok[0][0]
+        check_attack_black_ai(spisok2, pole2)
+        if spisok2 == []:
+            print('')
+        elif check == spisok2[0][0]:
+            c_attack_black(spisok2, pole2)
+    elif hod_black_ai(spisok2, pole2) != []:
+        b = spisok2[0][0]
         x1 = b[0]
         y1 = b[1]
-        b = spisok[0][1]
+        b = spisok2[0][1]
         x2 = b[0]
         y2 = b[1]
         if pole2[y1][x1] == 4:
@@ -173,74 +198,65 @@ def h_black(spisok,pole2):
             pole2[y1][x1] = 0
         if y2 == 7:
             pole2[y2][x2] = 4
+    return pole2
 
-
-
-def hod_ai_for_neyron(spisok, pole2):
-    spisok = []
-    c_attack_black(spisok, pole2)
-    h_black(spisok, pole2)
-
-
-def check_c():
-    spisok = []
-    if check_attack_white(spisok) != []:
-        b = spisok[0][0]
-        x_poz = b[0]
-        y_poz = b[1]
-        b = spisok[0][1]
+def c_attack_white(spisok2, pole2):
+    spisok2 =[]
+    if check_attack_white_ai(spisok2, pole2) != []:
+        b = spisok2[0][0]
+        xi = b[0]
+        yi = b[1]
+        b = spisok2[0][1]
         x = b[0]
         y = b[1]
         kx = ky = 1
-        if x < x_poz: kx = -1
-        if y < y_poz: ky = -1
-        x_poz2, y_poz2 = x_poz, y_poz
+        if x < xi: kx = -1
+        if y < yi: ky = -1
+        x_poz2, y_poz2 = xi, yi
         while (x != x_poz2) or (y != y_poz2):
             x_poz2 += kx
             y_poz2 += ky
-            if pole[y_poz2][x_poz2] != 0:
-                if pole[y_poz][x_poz] == 2:
-                    pole[y_poz2][x_poz2] = 0
-                    pole[y][x] = 2
-                    pole[y_poz][x_poz] = 0
-                if pole[y_poz][x_poz] == 1:
-                    pole[y_poz2][x_poz2] = 0
-                    pole[y][x] = 1
-                    pole[y_poz][x_poz] = 0
+            if pole2[y_poz2][x_poz2] != 0:
+                if pole2[yi][xi] == 2:
+                    pole2[y_poz2][x_poz2] = 0
+                    pole2[y][x] = 2
+                    pole2[yi][xi] = 0
+                if pole2[yi][xi] == 1:
+                    pole2[y_poz2][x_poz2] = 0
+                    pole2[y][x] = 1
+                    pole2[yi][xi] = 0
                 if y == 0:
-                    pole[y][x] = 2
-                hod_ai()
-                spisok=[]
-                if check_attack_white(spisok) != [] :
-                    hod_ai()
-        animation(x_poz, y_poz, x, y)
-        board_draw()
-    elif hod_white(spisok) != []:
-        b = spisok[0][0]
+                    pole2[y][x] = 2
+        spisok2 = []
+        check_attack_white_ai(spisok2, pole2)
+        if spisok2 != []:
+            if (x, y) == spisok2[0][0]:
+                print(' 5664')
+                #c_attack_white(spisok2, pole2)
+    elif hod_white_ai(spisok2, pole2) != []:
+        b = spisok2[0][0]
         x1 = b[0]
         y1 = b[1]
-        b = spisok[0][1]
+        b = spisok2[0][1]
         x2 = b[0]
         y2 = b[1]
-        if pole[y1][x1] == 2:
-            pole[y2][x2] = 2
-            pole[y1][x1] = 0
-        if pole[y1][x1] == 1:
-            pole[y2][x2] = 1
-            pole[y1][x1] = 0
+        if pole2[y1][x1] == 2:
+            pole2[y2][x2] = 2
+            pole2[y1][x1] = 0
+        if pole2[y1][x1] == 1:
+            pole2[y2][x2] = 1
+            pole2[y1][x1] = 0
         if y2 == 0:
-            pole[y2][x2] = 2
-        animation(x1, y1, x2, y2)
-        board_draw()
-        hod_ai()
+            pole2[y2][x2] = 2
+    return pole2
 
 
 def check_click(event):
     spisok = []
     x, y = (event.x) // 100, (event.y) // 100
     check = ((x_poz, y_poz), (x, y))
-    if check_attack_white(spisok) != []:
-        if check in check_attack_white(spisok):
+    if check_attack_white(spisok, pole) != []:
+        if check in check_attack_white(spisok, pole):
             kx = ky = 1
             if x < x_poz:
                 kx = -1
@@ -264,12 +280,12 @@ def check_click(event):
             animation(x_poz, y_poz, x, y)
             board_draw()
             spisok = []
-            check_attack_white(spisok)
+            check_attack_white(spisok, pole)
             if spisok == []:
                 hod_ai()
             elif (x, y) == spisok[0][0]:
                 print(spisok[0][0])
-    elif check in hod_white(spisok):
+    elif check in hod_white(spisok, pole):
         if pole[y_poz][x_poz] == 1:
             pole[y][x] = 1
             pole[y_poz][x_poz] = 0
@@ -287,7 +303,7 @@ def check_click(event):
 
 def hod_ai():
     spisok = []
-    if check_attack_black(spisok) != []:
+    if check_attack_black(spisok,pole) != []:
         b = spisok[0][0]
         x_poz = b[0]
         y_poz = b[1]
@@ -317,12 +333,12 @@ def hod_ai():
        # check_c()
         spisok = []
         check = (x, y)
-        check_attack_black(spisok)
+        check_attack_black(spisok, pole)
         if spisok ==[]:
-            print('hodmi')
+            print('')
         elif check == spisok[0][0]:
             hod_ai()
-    elif hod_black(spisok) != []:
+    elif hod_black(spisok, pole) != []:
         b = spisok[0][0]
         x1 = b[0]
         y1 = b[1]
@@ -339,21 +355,131 @@ def hod_ai():
             pole[y2][x2] = 4
         animation(x1, y1, x2, y2)
         board_draw()
-      #  check_c()
+        pole_w = pole
+        etachtyca(pole_w, 0)
+        print('1')
+        for i in range (8):
+            print(pole[i])
 
 
+def check_attack_white_ai(spisok1, pole1):
+    hod_white_attack_ai(spisok1, pole1)
+    return spisok1
 
-def check_attack_white(spisok):
-    hod_white_attack(spisok)
+
+def check_attack_black_ai(spisok1, pole1):
+    hod_black_attack_ai(spisok1, pole1)
+    return spisok1
+
+def hod_white_attack_ai(spisok1, pole1):
+    for y in range(8):
+        for x in range(8):
+            if pole1[y][x] == 1:
+                for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+                    if 0 <= y + iy + iy <= 7 and 0 <= x + ix + ix <= 7:
+                        if pole1[y + iy][x + ix] == 3 or pole1[y + iy][x + ix] == 4:
+                            if pole1[y + iy + iy][x + ix + ix] == 0:
+                                spisok1.append(((x, y), (x + ix + ix, y + iy + iy)))
+            if pole1[y][x] == 2:
+                for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+                    osh = 0
+                    for i in range(1, 8):
+                        if 0 <= y + iy * i <= 7 and 0 <= x + ix * i <= 7:
+                            if osh == 1:
+                                spisok1.append(((x, y), (x + ix * i, y + iy * i)))
+                            if pole1[y + iy * i][x + ix * i] == 3 or pole1[y + iy * i][x + ix * i] == 4:
+                                osh += 1
+                            if pole1[y + iy * i][x + ix * i] == 1 or pole1[y + iy * i][x + ix * i] == 2 or osh == 2:
+                                if osh > 0: spisok1.pop()
+                                break
+    return spisok1
+
+def hod_white_ai(spisok1, pole1):
+    for y in range(8):
+        for x in range(8):
+            if pole1[y][x] == 1:
+                for ix, iy in (-1, -1), (1, -1):
+                    if 0 <= y + iy <= 7 and 0 <= x + ix <= 7:
+                        if pole1[y + iy][x + ix] == 0:
+                            spisok1.append(((x, y), (x + ix, y + iy)))
+                        if pole1[y + iy][x + ix] == 3 or pole1[y + iy][x + ix] == 4:
+                            if 0 <= y + iy * 2 <= 7 and 0 <= x + ix * 2 <= 7:
+                                if pole1[y + iy * 2][x + ix * 2] == 0:
+                                    spisok1.append(((x, y), (x + ix * 2, y + iy * 2)))
+            if pole1[y][x] == 2:
+                for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+                    osh = 0
+                    for i in range(1, 8):
+                        if 0 <= y + iy * i <= 7 and 0 <= x + ix * i <= 7:
+                            if pole1[y + iy * i][x + ix * i] == 0:
+                                spisok1.append(((x, y), (x + ix * i, y + iy * i)))
+                            if pole1[y + iy * i][x + ix * i] == 3 or pole1[y + iy * i][x + ix * i] == 4:
+                                osh += 1
+                            if pole1[y + iy * i][x + ix * i] == 1 or pole1[y + iy * i][x + ix * i] == 2 or osh == 2:
+                                break
+    return spisok1
+
+
+def hod_black_attack_ai(spisok1, pole1):
+    for y in range(8):
+        for x in range(8):
+            if pole1[y][x] == 3:
+                for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+                    if 0 <= y + iy + iy <= 7 and 0 <= x + ix + ix <= 7:
+                        if pole1[y + iy][x + ix] == 1 or pole1[y + iy][x + ix] == 2:
+                            if pole1[y + iy + iy][x + ix + ix] == 0:
+                                spisok1.append(((x, y), (x + ix + ix, y + iy + iy)))
+            if pole1[y][x] == 4:
+                for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+                    osh = 0
+                    for i in range(1, 8):
+                        if 0 <= y + iy * i <= 7 and 0 <= x + ix * i <= 7:
+                            if osh == 1:
+                                spisok1.append(((x, y), (x + ix * i, y + iy * i)))
+                            if pole1[y + iy * i][x + ix * i] == 1 or pole1[y + iy * i][x + ix * i] == 2:
+                                osh += 1
+                            if pole1[y + iy * i][x + ix * i] == 3 or pole1[y + iy * i][x + ix * i] == 4 or osh == 2:
+                                if osh > 0: spisok1.pop()
+                                break
+    return spisok1
+
+def hod_black_ai(spisok1, pole1):
+    for y in range(8):
+        for x in range(8):
+            if pole1[y][x] == 3:
+                for ix, iy in (-1, 1), (1, 1):
+                    if 0 <= y + iy <= 7 and 0 <= x + ix <= 7:
+                        if pole1[y + iy][x + ix] == 0:
+                            spisok1.append(((x, y), (x + ix, y + iy)))
+                        if pole1[y + iy][x + ix] == 1 or pole1[y + iy][x + ix] == 2:
+                            if 0 <= y + iy * 2 <= 7 and 0 <= x + ix * 2 <= 7:
+                                if pole1[y + iy * 2][x + ix * 2] == 0:
+                                    spisok1.append(((x, y), (
+                                    x + ix * 2, y + iy * 2)))
+            if pole1[y][x] == 4:
+                for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
+                    osh = 0
+                    for i in range(1, 8):
+                        if 0 <= y + iy * i <= 7 and 0 <= x + ix * i <= 7:
+                            if pole1[y + iy * i][x + ix * i] == 0:
+                                spisok1.append(((x, y), (x + ix * i, y + iy * i)))
+                            if pole1[y + iy * i][x + ix * i] == 1 or pole1[y + iy * i][x + ix * i] == 2:
+                                osh += 1
+                            if pole1[y + iy * i][x + ix * i] == 3 or pole1[y + iy * i][x + ix * i] == 4 or osh == 2:
+                                break
+    return spisok1
+
+
+def check_attack_white(spisok, pole):
+    hod_white_attack(spisok, pole)
     return spisok
 
 
-def check_attack_black(spisok):
-    hod_black_attack(spisok)
+def check_attack_black(spisok, pole):
+    hod_black_attack(spisok, pole)
     return spisok
 
-
-def hod_white_attack(spisok):
+def hod_white_attack(spisok, pole):
     for y in range(8):
         for x in range(8):
             if pole[y][x] == 1:
@@ -376,7 +502,7 @@ def hod_white_attack(spisok):
                                 break
     return spisok
 
-def hod_white(spisok):
+def hod_white(spisok, pole):
     for y in range(8):
         for x in range(8):
             if pole[y][x] == 1:
@@ -387,8 +513,7 @@ def hod_white(spisok):
                         if pole[y + iy][x + ix] == 3 or pole[y + iy][x + ix] == 4:
                             if 0 <= y + iy * 2 <= 7 and 0 <= x + ix * 2 <= 7:
                                 if pole[y + iy * 2][x + ix * 2] == 0:
-                                    spisok.append(((x, y), (
-                                    x + ix * 2, y + iy * 2)))
+                                    spisok.append(((x, y), (x + ix * 2, y + iy * 2)))
             if pole[y][x] == 2:
                 for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
                     osh = 0
@@ -403,7 +528,7 @@ def hod_white(spisok):
     return spisok
 
 
-def hod_black_attack(spisok):
+def hod_black_attack(spisok, pole):
     for y in range(8):
         for x in range(8):
             if pole[y][x] == 3:
@@ -426,7 +551,7 @@ def hod_black_attack(spisok):
                                 break
     return spisok
 
-def hod_black(spisok):
+def hod_black(spisok, pole):
     for y in range(8):
         for x in range(8):
             if pole[y][x] == 3:
