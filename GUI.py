@@ -1,6 +1,7 @@
 import math as m
 from tkinter import *
 import time as t
+import copy
 
 window = Tk()
 window.title('Checkers AI')
@@ -20,9 +21,10 @@ def load_images():
 
 
 def new_game():
-    global pole_w
+    global price
+    price=[]
     global deep
-    deep = 1
+    deep = 2
     global spisok
     global p
     p=1
@@ -36,6 +38,7 @@ def new_game():
             [1, 0, 1, 0, 1, 0, 1, 0],
             [0, 1, 0, 1, 0, 1, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0]]
+
     load_images()
     board_draw()
 
@@ -94,9 +97,6 @@ def set_green_rect(event):
 
 def set_purple_rect(event):
     global x_poz, y_poz
-    print('p')
-    for i in range(8):
-        print(pole[i])
     x_poz, y_poz = (event.x) // 100, (event.y) // 100
     if pole[y_poz][x_poz] == 1 or pole[y_poz][x_poz] == 2:
         board.coords(purple_rect, x_poz * 100, y_poz * 100, x_poz * 100 + 100, y_poz * 100 + 100)
@@ -111,47 +111,51 @@ def scan(pole2):
             if pole2[j][i] == 2: p_white += 3
             if pole2[j][i] == 3: p_black += 1
             if pole2[j][i] == 4: p_black += 3
-    return [p_white, p_black]
+    return p_black-p_white
 
 
-def etachtyca(pole_d, deepi):
-    pole2 = pole_d
+def alpha_beta_pruning(pole2, deepi):
+    print('ai')
     spisok2 = []
-    while deepi != deep:
+    spisok3 = []
+    while deepi < deep:
         if check_attack_black_ai(spisok2, pole2) != []:
             spisok2 = check_attack_black_ai(spisok2, pole2)
         else:
             spisok2 = hod_black_ai(spisok2, pole2)
-        while deepi < deep:
-            f1(spisok2, pole2, deepi)
-            deepi += 1
-    return pole2
+        if spisok2 == []:
+            return price.append(scan(pole2))
+        while spisok2 != []:
+            spisok2_c = copy.deepcopy(spisok2)
+            del spisok2[0]
+            c_attack_black(spisok2_c, pole2)
+            del spisok2_c[0]
+            if check_attack_white_ai(spisok3, pole2) != []:
+                spisok3 = check_attack_white_ai(spisok3, pole2)
+            else:
+                spisok3 = hod_white_ai(spisok3, pole2)
+            if spisok3 ==[]:
+                return price.append(scan(pole2))
+            else:
+                while spisok3 != []:
+                    deepi += 1
+                    spisok3_c=copy.deepcopy(spisok3)
+                    pole3 = copy.deepcopy(pole2)
+                    del spisok3[0]
+                    f1(spisok3_c, pole3, deepi)
+    return price.append(scan(pole2))
 
 
-def f1(spisok2,pole2, deepi):
-    spisok3 = []
-    while spisok2 != []:
-        for i in range (8):
-            print(pole2[i])
-        print('2')
-        pole3 = c_attack_black(spisok2, pole2)
-        for i in range (8):
-            print(pole2[i])
-        print('3')
-        del spisok2[0]
-        if check_attack_white_ai(spisok3, pole3) != []:
-            spisok3 = check_attack_white_ai(spisok3, pole3)
-        else:
-            spisok3 = hod_white_ai(spisok3, pole3)
-        while spisok3 != []:
-            pole3 = c_attack_white(spisok3, pole3)
-            del spisok3[0]
-            etachtyca(pole3, deepi)
-    return scan(pole3)
+def f1(spisok3_c, pole2,deepi):
+    c_attack_white(spisok3_c, pole2)
+    del spisok3_c[0]
+    alpha_beta_pruning(pole2, deepi)
+
 
 def c_attack_black(spisok2, pole2):
-    spisok2 = []
-    if check_attack_black_ai(spisok2, pole2) != []:
+    spisok5 = []
+    if check_attack_black_ai(spisok5, pole2) != []:
+        print('sadshfajgshfshfjgshkjkgfhskdjgfhksjdgfkjhdsgf')
         b = spisok2[0][0]
         xi = b[0]
         yi = b[1]
@@ -180,7 +184,7 @@ def c_attack_black(spisok2, pole2):
         check = (x, y)
         check_attack_black_ai(spisok2, pole2)
         if spisok2 == []:
-            print('')
+            print('att_ai_bl')
         elif check == spisok2[0][0]:
             c_attack_black(spisok2, pole2)
     elif hod_black_ai(spisok2, pole2) != []:
@@ -198,11 +202,11 @@ def c_attack_black(spisok2, pole2):
             pole2[y1][x1] = 0
         if y2 == 7:
             pole2[y2][x2] = 4
-    return pole2
+
 
 def c_attack_white(spisok2, pole2):
-    spisok2 =[]
-    if check_attack_white_ai(spisok2, pole2) != []:
+    spisok5 = []
+    if check_attack_white_ai(spisok5, pole2) != []:
         b = spisok2[0][0]
         xi = b[0]
         yi = b[1]
@@ -231,8 +235,7 @@ def c_attack_white(spisok2, pole2):
         check_attack_white_ai(spisok2, pole2)
         if spisok2 != []:
             if (x, y) == spisok2[0][0]:
-                print(' 5664')
-                #c_attack_white(spisok2, pole2)
+                c_attack_white(spisok2, pole2)
     elif hod_white_ai(spisok2, pole2) != []:
         b = spisok2[0][0]
         x1 = b[0]
@@ -248,7 +251,7 @@ def c_attack_white(spisok2, pole2):
             pole2[y1][x1] = 0
         if y2 == 0:
             pole2[y2][x2] = 2
-    return pole2
+
 
 
 def check_click(event):
@@ -284,7 +287,7 @@ def check_click(event):
             if spisok == []:
                 hod_ai()
             elif (x, y) == spisok[0][0]:
-                print(spisok[0][0])
+                print('')
     elif check in hod_white(spisok, pole):
         if pole[y_poz][x_poz] == 1:
             pole[y][x] = 1
@@ -298,6 +301,7 @@ def check_click(event):
         #board_draw()
         animation(x_poz, y_poz, x, y)
         board_draw()
+        print('we')
         hod_ai()
 
 
@@ -355,11 +359,10 @@ def hod_ai():
             pole[y2][x2] = 4
         animation(x1, y1, x2, y2)
         board_draw()
-        pole_w = pole
-        etachtyca(pole_w, 0)
-        print('1')
-        for i in range (8):
-            print(pole[i])
+        pole2 = copy.deepcopy(pole)
+        alpha_beta_pruning(pole2, 0)
+        print(price)
+        price.clear()
 
 
 def check_attack_white_ai(spisok1, pole1):
