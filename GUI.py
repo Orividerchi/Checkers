@@ -24,10 +24,6 @@ def load_images():
 def new_game():
     global deep
     deep = 7
-    global spisok
-    global p
-    p = 1
-    spisok = []
     global main_field
     main_field = [[0, 3, 0, 3, 0, 3, 0, 3],
                   [3, 0, 3, 0, 3, 0, 3, 0],
