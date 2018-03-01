@@ -155,17 +155,14 @@ def alpha_beta_pruning(pole2, deepi):
 def hyita(pole2, deepi):
     spisok2 = []
     price_loc = []
-    create_black_spisok(spisok2,pole2)
-    if deepi == deep:
-        return scan(pole2)
-    else:
-        while spisok2 != []:
-            spisok2_c=copy.deepcopy(spisok2)
-            c_attack_black(spisok2_c,pole2)
-            pole2_c = copy.deepcopy(pole2)
-            price_loc.append(f2(deepi+1, pole2_c))
-            del spisok2[0]
-        return price_loc
+    create_black_spisok(spisok2, pole2)
+    while spisok2 != []:
+        spisok2_c=copy.deepcopy(spisok2)
+        pole2_c = copy.deepcopy(pole2)
+        c_attack_black(spisok2_c, pole2_c)
+        price_loc.append(f2(deepi+1, pole2_c))
+        del spisok2[0]
+    return price_loc
 
 
 def hyitar(pole2, deepi):
@@ -173,8 +170,6 @@ def hyitar(pole2, deepi):
     price_loc = []
     create_black_spisok(spisok2,pole2)
     if deepi == deep:
-        for i in range(8):
-            print(pole2[i])
         return scan(pole2)
     else:
         while spisok2 != []:
@@ -190,10 +185,7 @@ def f2(deepi, pole2):
     spisok3 = []
     price_loc = []
     create_white_spisok(spisok3,pole2)
-    print('kjhgf')
     if deepi == deep:
-        for i in range(8):
-            print(pole2[i])
         return scan(pole2)
     else:
         while spisok3 != []:
