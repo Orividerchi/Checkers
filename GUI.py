@@ -3,6 +3,7 @@ from tkinter import *
 import time as t
 import copy
 import math
+from PyQt5.QtWidgets import *
 
 window = Tk()
 window.title('Checkers AI')
@@ -37,10 +38,9 @@ def new_game():
     board_draw()
 
 
-def getInteger(self):
-    i, okPressed = QInputDialog.getInt(self, "Complicated", "Values from 1 to 8:", 28, 0, 100, 1)
-    if okPressed:
-        print(i)
+def set_difficulty():
+    text, ok = QInputDialog('Input Dialog', 'Enter your name')
+    print()
 
 
 def board_draw():
@@ -223,7 +223,7 @@ def black_moving(list_of_moving, field):
                     field[y][x] = 4
         list_of_moving_local = []
         check_black_attack(list_of_moving_local, field)
-        if list_of_moving_local:
+        if list_of_moving_local != []:
             if (x, y) == list_of_moving_local[0][0]:
                 black_moving(list_of_moving_local, field)
     elif hod_black(list_of_moving, field):
@@ -274,8 +274,8 @@ def white_moving(list_of_moving, field):
                     field[y][x] = 2
         list_of_moving_local = []
         check_white_attack(list_of_moving_local, field)
-        if list_of_moving_local:
-            if (x, y) == list_of_moving[0][0]:
+        if list_of_moving_local != []:
+            if (x, y) in list_of_moving:
                 white_moving(list_of_moving_local, field)
     elif hod_white(list_of_moving, field):
         b = list_of_moving[0][0]
@@ -323,11 +323,14 @@ def check_click(event):
             animation(x_poz, y_poz, x, y)
             board_draw()
             list_of_moving = []
-            check_black_attack(list_of_moving, main_field)
-            if list_of_moving:
+            check_white_attack(list_of_moving, main_field)
+            print(list_of_moving)
+            if list_of_moving == []:
                 hod_ai()
             elif (x, y) == list_of_moving[0][0]:
                 print('')
+            else:
+                hod_ai()
     elif check in hod_white(list_of_moving, main_field):
         if main_field[y_poz][x_poz] == 1:
             main_field[y][x] = 1
@@ -389,7 +392,7 @@ def hod_ai():
         list_of_moving = []
         check = (x2, y2)
         check_black_attack(list_of_moving, main_field)
-        if list_of_moving:
+        if list_of_moving == []:
             print('')
         elif check == list_of_moving[0][0]:
             hod_ai()
