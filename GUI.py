@@ -16,7 +16,7 @@ def load_images():
     global checker
     i1 = PhotoImage(file="res\\1b.gif")
     i2 = PhotoImage(file="res\\1bk.gif")
-    i3 = PhotoImage(file="res\\1h.gif")
+    i3 = PhotoImage(file="res\\ch1.png")
     i4 = PhotoImage(file="res\\1hk.gif")
     checker = [0, i1, i2, i3, i4]
 
@@ -27,23 +27,22 @@ def new_game():
     global n_price2
     n_price2 = []
     n_price =[]
-    price=[]
+    price = []
     global deep
-    deep = 2
+    deep = 6
     global spisok
     global p
     p=1
     spisok = []
     global pole
-    pole = [[0, 0, 0, 3, 0, 0, 0, 0],
+    pole = [[0, 3, 0, 3, 0, 3, 0, 3],
+            [3, 0, 3, 0, 3, 0, 3, 0],
+            [0, 3, 0, 3, 0, 3, 0, 3],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0]]
-
+            [1, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0]]
     load_images()
     board_draw()
 
@@ -120,65 +119,172 @@ def scan(pole2):
 
 
 def alpha_beta_pruning(pole2, deepi):
-    print('ai')
+    print(deepi,'ai')
     spisok2 = []
     spisok3 = []
-    while deepi < deep:
-        if check_attack_black_ai(spisok2, pole2) != []:
-            spisok2 = check_attack_black_ai(spisok2, pole2)
-        else:
-            spisok2 = hod_black_ai(spisok2, pole2)
+    while deepi <= deep:
+        create_black_spisok(spisok2, pole2)
         if spisok2 == []:
-            return 0
+            print('2 список пуст')
+            bufn = copy.deepcopy(n_price)
+          #  n_price.clear()
+            return neuron(bufn, deepi)
+            # return price.append(scan(pole2))
         while spisok2 != []:
             spisok2_c = copy.deepcopy(spisok2)
             del spisok2[0]
             c_attack_black(spisok2_c, pole2)
             del spisok2_c[0]
-            if check_attack_white_ai(spisok3, pole2) != []:
-                spisok3 = check_attack_white_ai(spisok3, pole2)
-            else:
-                spisok3 = hod_white_ai(spisok3, pole2)
-            if spisok3 ==[]:
-                return 0
-            else:
-                while spisok3 != []:
-                    deepi += 1
-                    spisok3_c=copy.deepcopy(spisok3)
-                    pole3 = copy.deepcopy(pole2)
-                    del spisok3[0]
-                    f1(spisok3_c, pole3, deepi)
-                neuron(price, deepi)
-                price.clear()#передача выше!
-                print(n_price, 'asdasd')
-        neuron(n_price, deepi)
-        print(n_price,'N-price')
-        n_price.clear()
-    return price.append(scan(pole2))
+            create_white_spisok(spisok3, pole2)
+            if spisok3 == []:
+                print('список 3 пустой')
+                bufp = copy.deepcopy(price)
+             #
+                #    price.clear()
+                return neuron(bufp, deepi)
+                # return price.append(scan(pole2))
+            while spisok3 != []:
+                deepi += 1
+                spisok3_c = copy.deepcopy(spisok3)
+                pole3 = copy.deepcopy(pole2)
+                del spisok3[0]
+                f1(spisok3_c, pole3, deepi)
+    return n_price
+
+
+def hyita(pole2, deepi):
+    spisok2 = []
+    price_loc = []
+    create_black_spisok(spisok2,pole2)
+    if deepi == deep:
+        return scan(pole2)
+    else:
+        while spisok2 != []:
+            spisok2_c=copy.deepcopy(spisok2)
+            c_attack_black(spisok2_c,pole2)
+            pole2_c = copy.deepcopy(pole2)
+            price_loc.append(f2(deepi+1, pole2_c))
+            del spisok2[0]
+        return price_loc
+
+
+def hyitar(pole2, deepi):
+    spisok2 = []
+    price_loc = []
+    create_black_spisok(spisok2,pole2)
+    if deepi == deep:
+        for i in range(8):
+            print(pole2[i])
+        return scan(pole2)
+    else:
+        while spisok2 != []:
+            pole2_c = copy.deepcopy(pole2)
+            spisok2_c=copy.deepcopy(spisok2)
+            c_attack_black(spisok2_c,pole2_c)
+            price_loc.append(f2(deepi+1, pole2_c))
+
+            del spisok2[0]
+        return neuron(price_loc, deepi)
+
+
+def f2(deepi, pole2):
+    spisok3 = []
+    price_loc = []
+    create_white_spisok(spisok3,pole2)
+    print('kjhgf')
+    if deepi == deep:
+        for i in range(8):
+            print(pole2[i])
+        return scan(pole2)
+    else:
+        while spisok3 != []:
+            pole2_c = copy.deepcopy(pole2)
+            spisok3_c=copy.deepcopy(spisok3)
+            c_attack_white(spisok3_c, pole2_c)
+            price_loc.append(hyitar(pole2_c, deepi+1))
+            del spisok3[0]
+        return neuron(price_loc,deepi)
+
+
+
+def hyit(pole2, deepi):
+    spisok2 = []
+    price_loc = []
+    create_black_spisok(spisok2,pole2)
+    while spisok2 != []:
+        if deepi == deep:
+            print('blackD',deepi)
+            return 100
+        else:
+            spisok2_c=copy.deepcopy(spisok2)
+            c_attack_black(spisok2_c,pole2)
+            pole2_c = copy.deepcopy(pole2)
+            print('black',deepi)
+            price_loc.append(f2(deepi+1, pole2_c))
+            del spisok2[0]
+    return neuron(price_loc, deepi)
+
+
+def f(deepi, pole2):
+    spisok3 = []
+    price_loc = []
+    create_white_spisok(spisok3,pole2)
+    while spisok3 != []:
+        if deepi != deep:
+            pole2_c = copy.deepcopy(pole2)
+            spisok3_c=copy.deepcopy(spisok3)
+            c_attack_white(spisok3_c, pole2_c)
+            print('white', deepi)
+            price_loc.append(hyita(pole2_c, deepi+1))
+            del spisok3[0]
+        else:
+            print('whiteD',deepi)
+            return 200
+    return neuron(price_loc,deepi)
+
+
+
+def create_black_spisok(spisok2,pole2):
+    if check_attack_black(spisok2, pole2) != []:
+        spisok2 = check_attack_black(spisok2, pole2)
+    else:
+        spisok2 = hod_black(spisok2, pole2)
+    return spisok2
+
+
+def create_white_spisok(spisok3,pole2):
+    if check_attack_white(spisok3, pole2) != []:
+        spisok3 = check_attack_white(spisok3, pole2)
+    else:
+        spisok3 = hod_white(spisok3, pole2)
+    return spisok3
 
 
 def neuron(price = [], deepi = 0):
     xe = 0
-    n = price.__len__()
-    for i in range(n):
-        price[i]*(1/deepi)
-        xe += price[i]
-    return n_price.append(sigmoid(xe))
+    for i in range(price.__len__()):
+        price[i]*=1/(deepi+1)
+        xe+=price[i]
+    xe=sigmoid(xe)
+    price=[]
+    return xe
+
 
 def sigmoid(x):
-  return 1 / (1 + math.exp(-x))
+  return x
 
 
 def f1(spisok3_c, pole2,deepi):
     c_attack_white(spisok3_c, pole2)
     del spisok3_c[0]
+    if deepi==deep:
+       return price.append(scan(pole2))
     alpha_beta_pruning(pole2, deepi)
 
 
 def c_attack_black(spisok2, pole2):
     spisok5 = []
     if check_attack_black_ai(spisok5, pole2) != []:
-        print('sadshfajgshfshfjgshkjkgfhskdjgfhksjdgfkjhdsgf')
         b = spisok2[0][0]
         xi = b[0]
         yi = b[1]
@@ -203,13 +309,13 @@ def c_attack_black(spisok2, pole2):
                     pole2[yi][xi] = 0
                 if y == 7:
                     pole2[y][x] = 4
-        spisok2 = []
+        spisok5 = []
         check = (x, y)
-        check_attack_black_ai(spisok2, pole2)
-        if spisok2 == []:
-            print('att_ai_bl')
-        elif check == spisok2[0][0]:
-            c_attack_black(spisok2, pole2)
+        check_attack_black_ai(spisok5, pole2)
+        if spisok5 == []:
+            print('')
+        elif check == spisok5[0][0]:
+            c_attack_black(spisok5, pole2)
     elif hod_black_ai(spisok2, pole2) != []:
         b = spisok2[0][0]
         x1 = b[0]
@@ -254,11 +360,11 @@ def c_attack_white(spisok2, pole2):
                     pole2[yi][xi] = 0
                 if y == 0:
                     pole2[y][x] = 2
-        spisok2 = []
-        check_attack_white_ai(spisok2, pole2)
-        if spisok2 != []:
+        spisok5 = []
+        check_attack_white_ai(spisok5, pole2)
+        if spisok5 != []:
             if (x, y) == spisok2[0][0]:
-                c_attack_white(spisok2, pole2)
+                c_attack_white(spisok5, pole2)
     elif hod_white_ai(spisok2, pole2) != []:
         b = spisok2[0][0]
         x1 = b[0]
@@ -324,17 +430,32 @@ def check_click(event):
         #board_draw()
         animation(x_poz, y_poz, x, y)
         board_draw()
-        print('we')
         hod_ai()
+
+def max(a=[]):
+    max=0
+    maxi=0
+    for i in range(a.__len__()):
+        if a[i]>max:
+            max=a[i]
+            maxi=i
+    return maxi
 
 
 def hod_ai():
+    pole2 = copy.deepcopy(pole)
+    a = hyita(pole2, 1)
+    print(a)
+    i = max(a)
+    print(n_price, 'n_price')
+    print(n_price2, 'n_price2')
+    #best = n_price2.index(n_price2.ma)
     spisok = []
     if check_attack_black(spisok,pole) != []:
-        b = spisok[0][0]
+        b = spisok[i][0]
         x_poz = b[0]
         y_poz = b[1]
-        b = spisok[0][1]
+        b = spisok[i][1]
         x = b[0]
         y = b[1]
         kx = ky = 1
@@ -366,10 +487,10 @@ def hod_ai():
         elif check == spisok[0][0]:
             hod_ai()
     elif hod_black(spisok, pole) != []:
-        b = spisok[0][0]
+        b = spisok[i][0]
         x1 = b[0]
         y1 = b[1]
-        b = spisok[0][1]
+        b = spisok[i][1]
         x2 = b[0]
         y2 = b[1]
         if pole[y1][x1] == 4:
@@ -382,10 +503,7 @@ def hod_ai():
             pole[y2][x2] = 4
         animation(x1, y1, x2, y2)
         board_draw()
-        pole2 = copy.deepcopy(pole)
-        alpha_beta_pruning(pole2, 0)
-        print(price)
-        price.clear()
+
 
 
 def check_attack_white_ai(spisok1, pole1):
