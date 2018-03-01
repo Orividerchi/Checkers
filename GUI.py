@@ -2,7 +2,6 @@ import math as m
 from tkinter import *
 import time as t
 import copy
-
 import math
 
 window = Tk()
