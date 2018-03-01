@@ -2,6 +2,7 @@ import math as m
 from tkinter import *
 import time as t
 import copy
+import math
 
 window = Tk()
 window.title('Checkers AI')
@@ -22,6 +23,10 @@ def load_images():
 
 def new_game():
     global price
+    global n_price
+    global n_price2
+    n_price2 = []
+    n_price =[]
     price=[]
     global deep
     deep = 2
@@ -30,14 +35,14 @@ def new_game():
     p=1
     spisok = []
     global pole
-    pole = [[0, 3, 0, 3, 0, 3, 0, 3],
-            [3, 0, 3, 0, 3, 0, 3, 0],
-            [0, 3, 0, 3, 0, 3, 0, 3],
+    pole = [[0, 0, 0, 3, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 1, 0, 1, 0, 1, 0],
-            [0, 1, 0, 1, 0, 1, 0, 1],
-            [1, 0, 1, 0, 1, 0, 1, 0]]
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0]]
 
     load_images()
     board_draw()
@@ -124,7 +129,7 @@ def alpha_beta_pruning(pole2, deepi):
         else:
             spisok2 = hod_black_ai(spisok2, pole2)
         if spisok2 == []:
-            return price.append(scan(pole2))
+            return 0
         while spisok2 != []:
             spisok2_c = copy.deepcopy(spisok2)
             del spisok2[0]
@@ -135,7 +140,7 @@ def alpha_beta_pruning(pole2, deepi):
             else:
                 spisok3 = hod_white_ai(spisok3, pole2)
             if spisok3 ==[]:
-                return price.append(scan(pole2))
+                return 0
             else:
                 while spisok3 != []:
                     deepi += 1
@@ -143,7 +148,25 @@ def alpha_beta_pruning(pole2, deepi):
                     pole3 = copy.deepcopy(pole2)
                     del spisok3[0]
                     f1(spisok3_c, pole3, deepi)
+                neuron(price, deepi)
+                price.clear()#передача выше!
+                print(n_price, 'asdasd')
+        neuron(n_price, deepi)
+        print(n_price,'N-price')
+        n_price.clear()
     return price.append(scan(pole2))
+
+
+def neuron(price = [], deepi = 0):
+    xe = 0
+    n = price.__len__()
+    for i in range(n):
+        price[i]*(1/deepi)
+        xe += price[i]
+    return n_price.append(sigmoid(xe))
+
+def sigmoid(x):
+  return 1 / (1 + math.exp(-x))
 
 
 def f1(spisok3_c, pole2,deepi):
