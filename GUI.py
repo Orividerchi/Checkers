@@ -390,11 +390,10 @@ def hod_ai():
         animation(x1, y1, x2, y2)
         board_draw()
         list_of_moving = []
-        check = (x2, y2)
         check_black_attack(list_of_moving, main_field)
         if list_of_moving == []:
             print('')
-        elif check == list_of_moving[0][0]:
+        elif (x2, y2) == list_of_moving[0][0]:
             hod_ai()
     elif hod_black(list_of_moving, main_field):
         b = list_of_moving[i][0]
