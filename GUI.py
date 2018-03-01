@@ -14,10 +14,10 @@ board.pack()
 
 def load_images():
     global checker
-    i1 = PhotoImage(file="res\\1b.gif")
-    i2 = PhotoImage(file="res\\1bk.gif")
-    i3 = PhotoImage(file="res\\ch1.png")
-    i4 = PhotoImage(file="res\\1hk.gif")
+    i1 = PhotoImage(file="res\\white.png")
+    i2 = PhotoImage(file="res\\white_Q.png")
+    i3 = PhotoImage(file="res\\black.png")
+    i4 = PhotoImage(file="res\\black_Q.png")
     checker = [0, i1, i2, i3, i4]
 
 
@@ -182,7 +182,6 @@ def hyitar(pole2, deepi):
             spisok2_c=copy.deepcopy(spisok2)
             c_attack_black(spisok2_c,pole2_c)
             price_loc.append(f2(deepi+1, pole2_c))
-
             del spisok2[0]
         return neuron(price_loc, deepi)
 
