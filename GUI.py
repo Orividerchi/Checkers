@@ -2,6 +2,7 @@ import math as m
 from tkinter import *
 import time as t
 import copy
+
 import math
 
 window = Tk()
@@ -29,7 +30,7 @@ def new_game():
     n_price =[]
     price = []
     global deep
-    deep = 6
+    deep = 7
     global spisok
     global p
     p=1
@@ -45,6 +46,13 @@ def new_game():
             [1, 0, 1, 0, 1, 0, 1, 0]]
     load_images()
     board_draw()
+
+
+def getInteger(self):
+    i, okPressed = QInputDialog.getInt(self, "Complicated", "Values from 1 to 8:", 28, 0, 100, 1)
+    if okPressed:
+        print(i)
+
 
 
 def board_draw():
@@ -262,7 +270,7 @@ def neuron(price = [], deepi = 0):
 
 
 def sigmoid(x):
-  return x
+  return 1 / (1 + math.exp(-x))
 
 
 def f1(spisok3_c, pole2,deepi):
