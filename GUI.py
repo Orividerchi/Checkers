@@ -1,5 +1,6 @@
 
 from tkinter import *
+from tkinter import messagebox
 import time as t
 import copy
 import math
@@ -344,7 +345,6 @@ def check_click(event):
         board_draw()
         hod_ai()
 
-
 def max_index(a):
     max_element = 0
     max_i = 0
@@ -412,7 +412,7 @@ def hod_ai():
             main_field[y2][x2] = 4
         animation(x1, y1, x2, y2)
         board_draw()
-
+    check_end()
 
 def check_white_attack(list_of_moving, field):
     for y in range(8):
@@ -517,11 +517,30 @@ def hod_black(list_of_moving, field):
     return list_of_moving
 
 
+def check_end():
+    count = 0
+    list_of_moving = []
+    for i in range(8):
+        for j in range(8):
+            if main_field[i][j] == 1 or main_field[i][j] == 2:
+                count += 1
+    if count == 0 or create_white_list(list_of_moving, main_field) == []:
+        messagebox.showinfo('End Game', 'You lose')
+        return 1
+    count = 0
+    list_of_moving = []
+    for i in range(8):
+        for j in range(8):
+            if main_field[i][j] == 3 or main_field[i][j] == 4:
+                count += 1
+    if count == 0 or create_black_list(list_of_moving, main_field) == []:
+        messagebox.showinfo('End Game', 'WIN!!!')
+        return 1
+
+
 main_menu = Menu()
 file_menu = Menu()
-file_menu.add_command(label="Difficulty")
 main_menu.add_cascade(label="New Game", command=new_game)
-main_menu.add_cascade(label="Options", menu=file_menu)
 main_menu.add_cascade(label="Exit", command=exit)
 window.config(menu=main_menu)
 new_game()
